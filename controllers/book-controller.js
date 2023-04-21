@@ -3,7 +3,7 @@ const { BookModel, UserModel } = require("../models/index");
 
 exports.getAllBooks = async (req, res) => {
   const books = await BookModel.find();
-  if (book === 0) {
+  if (books === 0) {
     return res.status(404).json({
       success: false,
       message: "No book found",
@@ -43,5 +43,40 @@ exports.getAllIssuedBooks = async (req, res) => {
   return res.status(200).json({
     success: "true",
     data: issuedBooks,
+  });
+};
+
+exports.addNewBook = async (req, res) => {
+  const { data } = req.body;
+  if (!data) {
+    return res.status(400).json({
+      success: false,
+      message: "No data provided",
+    });
+  }
+  await BookModel.create(data);
+  const allBooks = await BookModel.find();
+
+  return res.status(200).json({
+    success: true,
+    data: allBooks,
+  });
+};
+exports.updateBookByid = async (req, res) => {
+  const { id } = req.params;
+  const { data } = req.body;
+  const updatedBook = await BookModel.findOneAndUpdate(
+    {
+      _id: id,
+    },
+    data,
+    {
+      new: true,
+    }
+  );
+
+  return res.status(200).json({
+    success: true,
+    data: updatedBook,
   });
 };
